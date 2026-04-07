@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SVG Master Pro | Premium Image Converter</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg-dark: #08080c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #e0e0e0;
+            --accent-glow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Custom Splash Screen --- */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .logo-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            border-bottom-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .splash-text {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+
+        /* --- Main App Container --- */
+        .app-wrapper {
+            width: 95%;
+            max-width: 450px;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+            display: none;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(to bottom right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 40px;
+        }
+
+        /* --- Drop Zone --- */
+        .drop-zone {
+            width: 100%;
+            aspect-ratio: 1/1;
+            border: 2px dashed rgba(0, 242, 255, 0.2);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .drop-zone:hover, .drop-zone.active {
+            border-color: var(--primary);
+            background: rgba(0, 242, 255, 0.05);
+            box-shadow: var(--accent-glow);
+        }
+
+        .drop-zone svg {
+            width: 60px;
+            height: 60px;
+            stroke: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        #preview-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+            padding: 20px;
+        }
+
+        /* --- Action Buttons --- */
+        .btn-group {
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 18px;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 10px 20px rgba(112, 0, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            filter: grayscale(1);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: #ccc;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: #fff;
+        }
+
+        /* --- Result Section --- */
+        #result-section {
+            margin-top: 30px;
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-output {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 15px;
+            color: var(--primary);
+            font-family: monospace;
+            font-size: 0.75rem;
+            text-align: left;
+            height: 120px;
+            overflow-y: auto;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        .status-msg {
+            font-size: 0.8rem;
+            color: #00ff88;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo-container">
+            <div class="logo-circle"></div>
+        </div>
+        <div class="splash-text">HAIDER PRO</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="app-wrapper" id="app">
+        <div class="glass-card">
+            <header>
+                <h1>SVG Convert Pro</h1>
+                <p>Premium Transparent to SVG URL Link</p>
+            </header>
+
+            <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <img id="preview-img" src="" alt="Preview">
+                <div id="drop-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p style="font-size: 0.9rem; color: #888;">Select Transparent Image</p>
+                </div>
+                <input type="file" id="file-input" hidden accept="image/*">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="convert-btn" disabled onclick="handleConversion()">
+                    <span>CONVERT TO SVG LINK</span>
+                </button>
+            </div>
+
+            <div id="result-section">
+                <p id="status-text" class="status-msg">SVG Data URL Ready!</p>
+                <div class="code-output" id="output-code"></div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="btn btn-outline" onclick="copyToClipboard()">
+                        COPY LINK
+                    </button>
+                    <button class="btn btn-outline" onclick="resetApp()" style="font-size: 0.8rem; border: none; opacity: 0.6;">
+                        Convert Another
+                    </button>
+                </div>
+            </div>
+
+            <footer>Powered by Haider Technology</footer>
+        </div>
+    </div>
+
+    <script>
+        const splash = document.getElementById('splash-screen');
+        const app = document.getElementById('app');
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('drop-zone');
+        const previewImg = document.getElementById('preview-img');
+        const dropContent = document.getElementById('drop-content');
+        const convertBtn = document.getElementById('convert-btn');
+        const resultSection = document.getElementById('result-section');
+        const outputCode = document.getElementById('output-code');
+        const statusText = document.getElementById('status-text');
+
+        let currentBase64 = "";
+
+        // 1. Initial Splash Logic
+        window.onload = () => {
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    app.style.display = 'block';
+                    setTimeout(() => {
+                        app.style.opacity = '1';
+                        app.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 800);
+            }, 3500);
+        };
+
+        // 2. File Handling Logic
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentBase64 = event.target.result;
+                    previewImg.src = currentBase64;
+                    previewImg.style.display = 'block';
+                    dropContent.style.display = 'none';
+                    convertBtn.disabled = false;
+                    resultSection.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 3. Conversion Logic (The core feature)
+        function handleConversion() {
+            if (!currentBase64) return;
+
+            // Step A: Create SVG wrapper
+            // We use the base64 of image inside an SVG <image> tag
+            const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+    <image href="${currentBase64}" width="1000" height="1000" />
+</svg>`;
+
+            // Step B: Convert entire SVG to a Data URL (The Link)
+            // This turns the whole SVG code into a portable URI link
+            const svgBase64 = btoa(unescape(encodeURIComponent(svgString)));
+            const dataUrlLink = `data:image/svg+xml;base64,${svgBase64}`;
+
+            // Step C: Display Results
+            outputCode.innerText = dataUrlLink;
+            resultSection.style.display = 'block';
+            statusText.style.display = 'block';
+            
+            // Scroll to result
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        // 4. Utility Functions
+        function copyToClipboard() {
+            const text = outputCode.innerText;
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            const btn = event.currentTarget;
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            btn.style.color = "#00ff88";
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.color = "#ccc";
+            }, 2000);
+        }
+
+        function resetApp() {
+            fileInput.value = "";
+            previewImg.style.display = 'none';
+            dropContent.style.display = 'flex';
+            convertBtn.disabled = true;
+            resultSection.style.display = 'none';
+            currentBase64 = "";
+        }
+
+        // Mobile touch feedback
+        dropZone.addEventListener('touchstart', () => dropZone.classList.add('active'));
+        dropZone.addEventListener('touchend', () => dropZone.classList.remove('active'));
+    </script>
+</body>
+</html>
