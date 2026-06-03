@@ -305,15 +305,14 @@
         }
 
         function downloadSVG(filename) {
-            const blob = new Blob([currentSVG], { type: 'image/svg+xml' });
-            const url = URL.createObjectURL(blob);
+            const svgContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + currentSVG;
+            const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgContent);
             const a = document.createElement('a');
-            a.href = url;
+            a.href = data;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
             showNotify("SVG Downloaded!");
         }
 
