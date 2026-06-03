@@ -306,14 +306,16 @@
 
         function downloadSVG(filename) {
             const svgContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + currentSVG;
-            const data = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgContent);
+            const blob = new Blob([svgContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = data;
+            a.href = url;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            showNotify("SVG Downloaded!");
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showNotify("SVG Code File Downloaded!");
         }
 
         // --- Feature 2: Share code ---
