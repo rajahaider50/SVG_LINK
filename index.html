@@ -19,10 +19,10 @@
             border-radius: 24px;
         }
         .preview-grid {
-            background-image: 
-                linear-gradient(45deg, #111 25%, transparent 25%), 
-                linear-gradient(-45deg, #111 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #111 75%), 
+            background-image:
+                linear-gradient(45deg, #111 25%, transparent 25%),
+                linear-gradient(-45deg, #111 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #111 75%),
                 linear-gradient(-45deg, transparent 75%, #111 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
@@ -43,6 +43,22 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
         }
+        .btn-download {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        .btn-share {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-share:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
         .loader {
             border: 3px solid #111;
             border-top: 3px solid #3b82f6;
@@ -52,9 +68,57 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #1a1a24;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .modal-box input:focus {
+            border-color: #10b981;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <!-- Filename Modal -->
+    <div id="filenameModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold mb-2">Download SVG</h3>
+            <p class="text-gray-400 text-sm mb-4">Enter a name for your SVG file</p>
+            <input type="text" id="filenameInput" value="logo" placeholder="filename" autofocus>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal()" class="flex-1 bg-white/10 hover:bg-white/20 p-3 rounded-xl font-semibold transition-all">Cancel</button>
+                <button onclick="confirmDownload()" class="flex-1 btn-download p-3 rounded-xl font-bold text-white">Download</button>
+            </div>
+        </div>
+    </div>
 
     <div class="w-full max-w-5xl space-y-8">
         <!-- Header -->
@@ -65,7 +129,7 @@
 
         <!-- Main Workspace -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
+
             <!-- Left Side: Upload & Input -->
             <div class="glass-card p-8 flex flex-col space-y-6">
                 <div id="dropZone" class="border-2 border-dashed border-gray-700 rounded-3xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer group">
@@ -92,6 +156,14 @@
                     <button onclick="copyURL()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 text-white">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         Copy URL
+                    </button>
+                    <button onclick="openDownloadModal()" class="btn-download p-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download SVG
+                    </button>
+                    <button onclick="shareCode()" class="btn-share p-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        Share
                     </button>
                 </div>
 
@@ -144,6 +216,8 @@
         const urlContainer = document.getElementById('urlContainer');
         const urlText = document.getElementById('urlText');
         const notification = document.getElementById('notification');
+        const filenameModal = document.getElementById('filenameModal');
+        const filenameInput = document.getElementById('filenameInput');
 
         let currentSVG = "";
         let currentDataURL = "";
@@ -188,18 +262,18 @@
         }
 
         function generateSVG(base64, width, height) {
-            // High precision SVG Wrapper for transparent PNGs
-            const svgCode = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">\n  <image href="${base64}" width="${width}" height="${height}" />\n</svg>`;
-            
+            const svgCode = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">\n  <image href="' + base64 + '" width="' + width + '" height="' + height + '" />\n</svg>';
+
             currentSVG = svgCode;
             currentDataURL = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgCode)));
 
-            // Update UI
             previewArea.innerHTML = svgCode;
             const previewSvg = previewArea.querySelector('svg');
-            previewSvg.style.maxWidth = "100%";
-            previewSvg.style.maxHeight = "100%";
-            previewSvg.style.height = "auto";
+            if (previewSvg) {
+                previewSvg.style.maxWidth = "100%";
+                previewSvg.style.maxHeight = "100%";
+                previewSvg.style.height = "auto";
+            }
 
             codeOutput.value = svgCode;
             urlText.innerText = currentDataURL;
@@ -210,6 +284,69 @@
             urlContainer.classList.remove('hidden');
         }
 
+        // --- Feature 1: Download SVG with custom filename ---
+        function openDownloadModal() {
+            if (!currentSVG) return;
+            filenameInput.value = "logo";
+            filenameModal.classList.add('active');
+            setTimeout(() => filenameInput.focus(), 100);
+        }
+
+        function closeModal() {
+            filenameModal.classList.remove('active');
+        }
+
+        function confirmDownload() {
+            let name = filenameInput.value.trim();
+            if (!name) name = "logo";
+            if (!name.endsWith('.svg')) name += '.svg';
+            closeModal();
+            downloadSVG(name);
+        }
+
+        function downloadSVG(filename) {
+            const blob = new Blob([currentSVG], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotify("SVG Downloaded!");
+        }
+
+        // --- Feature 2: Share code ---
+        function shareCode() {
+            if (!currentSVG) return;
+
+            const shareData = {
+                title: 'SVG Pro Converter',
+                text: currentSVG,
+                url: currentDataURL
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).catch(() => {
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+        }
+
+        function fallbackShare() {
+            const text = "SVG Code:\n\n" + currentSVG + "\n\nData URL:\n" + currentDataURL;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotify("SVG Code + URL copied! Share anywhere.");
+            }).catch(() => {
+                // Final fallback: select the URL text
+                copyURL();
+            });
+        }
+
+        // --- Original Actions ---
         function copyCode() {
             if (!currentSVG) return;
             navigator.clipboard.writeText(currentSVG);
@@ -229,6 +366,16 @@
                 notification.classList.add('translate-y-24', 'opacity-0');
             }, 3000);
         }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Close modal on overlay click
+        filenameModal.addEventListener('click', (e) => {
+            if (e.target === filenameModal) closeModal();
+        });
     </script>
 </body>
 </html>
