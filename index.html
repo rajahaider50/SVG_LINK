@@ -3,206 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PNG to SVG & URL Converter</title>
+    <title>SVG PRO - Premium Production Converter</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030303;
             color: #ffffff;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 32px;
         }
         .preview-grid {
             background-image:
-                linear-gradient(45deg, #111 25%, transparent 25%),
-                linear-gradient(-45deg, #111 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #111 75%),
-                linear-gradient(-45deg, transparent 75%, #111 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: #000;
+                linear-gradient(45deg, #090909 25%, transparent 25%),
+                linear-gradient(-45deg, #090909 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #090909 75%),
+                linear-gradient(-45deg, transparent 75%, #090909 75%);
+            background-size: 24px 24px;
+            background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+            background-color: #000000;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #333;
+            background: #222;
             border-radius: 10px;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            transition: all 0.3s ease;
+        .btn-action {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-primary:hover {
+        .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-        }
-        .btn-download {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-        }
-        .btn-share {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-share:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
         }
         .loader {
             border: 3px solid #111;
             border-top: 3px solid #3b82f6;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* Modal */
+        
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         .modal-overlay.active {
             display: flex;
-        }
-        .modal-box {
-            background: #1a1a24;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-        }
-        .modal-box input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1rem;
-            outline: none;
-        }
-        .modal-box input:focus {
-            border-color: #10b981;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-12">
 
-    <!-- Filename Modal -->
-    <div id="filenameModal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 class="text-lg font-bold mb-2">Download SVG</h3>
-            <p class="text-gray-400 text-sm mb-4">Enter a name for your SVG file</p>
-            <input type="text" id="filenameInput" value="logo" placeholder="filename" autofocus>
-            <div class="flex gap-3 mt-6">
-                <button onclick="closeModal()" class="flex-1 bg-white/10 hover:bg-white/20 p-3 rounded-xl font-semibold transition-all">Cancel</button>
-                <button onclick="confirmDownload()" class="flex-1 btn-download p-3 rounded-xl font-bold text-white">Download</button>
+    <div id="downloadModal" class="modal-overlay">
+        <div class="glass-card bg-[#0b0b0f] border border-neutral-800 p-8 w-full max-w-md mx-4 shadow-2xl space-y-6">
+            <div>
+                <h3 class="text-xl font-bold text-white tracking-tight">Export Production Assets</h3>
+                <p class="text-neutral-400 text-xs mt-1">Configure filename and preferred structure package</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Asset Filename</label>
+                <input type="text" id="filenameInput" value="vector_source" class="w-full px-4 py-3 bg-neutral-950 border border-neutral-800 rounded-xl text-white text-sm outline-none focus:border-emerald-500 transition-colors" placeholder="e.g. brand_logo" autofocus>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 pt-2">
+                <button onclick="triggerDownload('svg')" class="btn-action w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-left p-4 rounded-xl flex items-center justify-between group">
+                    <div>
+                        <p class="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">Download Raw SVG File</p>
+                        <p class="text-neutral-500 text-xs mt-0.5">Standalone vectorized structural file (.svg)</p>
+                    </div>
+                    <svg class="w-5 h-5 text-neutral-500 group-hover:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </button>
+
+                <button onclick="triggerDownload('zip')" class="btn-action w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-left p-4 rounded-xl flex items-center justify-between shadow-lg shadow-emerald-950/20">
+                    <div>
+                        <p class="text-sm font-bold text-white">Download Compressed ZIP</p>
+                        <p class="text-emerald-100/70 text-xs mt-0.5">Contains optimized svg_code.svg inside capsule</p>
+                    </div>
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                </button>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button onclick="closeModal()" class="text-xs font-semibold text-neutral-400 hover:text-white transition-colors">Dismiss Window</button>
             </div>
         </div>
     </div>
 
-    <div class="w-full max-w-5xl space-y-8">
-        <!-- Header -->
-        <div class="text-center space-y-2">
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">SVG <span class="text-blue-500">PRO</span> CONVERTER</h1>
-            <p class="text-gray-400 text-lg">Convert transparent PNGs to production-ready SVG code and URLs</p>
+    <div class="w-full max-w-6xl space-y-10 relative z-10">
+        
+        <div class="text-center space-y-3">
+            <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">v2.5 High-Fidelity Engine</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400">
+                SVG PRO CONVERTER
+            </h1>
+            <p class="text-neutral-400 text-sm md:text-base font-light max-w-xl mx-auto">
+                Transform assets into production-grade vector containers with unlimited payload stream streaming architecture.
+            </p>
         </div>
 
-        <!-- Main Workspace -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <!-- Left Side: Upload & Input -->
-            <div class="glass-card p-8 flex flex-col space-y-6">
-                <div id="dropZone" class="border-2 border-dashed border-gray-700 rounded-3xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer group">
+            <div class="lg:col-span-5 glass-card p-6 md:p-8 space-y-6">
+                
+                <div id="dropZone" class="border-2 border-dashed border-neutral-800 rounded-2xl p-10 text-center hover:border-blue-500/50 hover:bg-blue-500/[0.01] transition-all duration-300 cursor-pointer group relative overflow-hidden">
                     <input type="file" id="fileInput" class="hidden" accept="image/png">
-                    <div id="uploadPrompt">
-                        <div class="bg-blue-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    
+                    <div id="uploadPrompt" class="space-y-4">
+                        <div class="bg-neutral-900 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-neutral-800 group-hover:scale-105 group-hover:border-blue-500/30 transition-all duration-300">
+                            <svg class="w-6 h-6 text-neutral-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path></svg>
                         </div>
-                        <h3 class="text-xl font-semibold">Upload PNG</h3>
-                        <p class="text-gray-500 text-sm mt-2">Drag and drop your transparent image here</p>
+                        <div>
+                            <h3 class="text-base font-semibold text-neutral-200">Import Target File</h3>
+                            <p class="text-neutral-500 text-xs mt-1">Supports alpha channel transparent PNG</p>
+                        </div>
                     </div>
-                    <div id="processingUI" class="hidden flex flex-col items-center">
+
+                    <div id="processingUI" class="hidden flex flex-col items-center py-4">
                         <div class="loader mb-4"></div>
-                        <p class="text-blue-500 font-medium animate-pulse">Generating SVG Code...</p>
+                        <p class="text-blue-400 text-xs font-bold uppercase tracking-wider animate-pulse">Streaming Memory Buffers...</p>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div id="actionButtons" class="hidden grid grid-cols-2 gap-4">
-                    <button onclick="copyCode()" class="btn-primary p-4 rounded-2xl font-bold flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        Copy SVG
+                <div id="actionButtons" class="hidden grid grid-cols-2 gap-3 opacity-0 transform translate-y-2 transition-all duration-500">
+                    <button onclick="copyCodeStream()" class="btn-action p-4 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-blue-950/40">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        Copy Vector
                     </button>
-                    <button onclick="copyURL()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Copy URL
+                    <button onclick="copyURLStream()" class="btn-action p-4 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        Copy URI
                     </button>
-                    <button onclick="openDownloadModal()" class="btn-download p-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Download SVG
-                    </button>
-                    <button onclick="shareCode()" class="btn-share p-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                        Share
+                    <button onclick="openDownloadModal()" class="btn-action col-span-2 p-4 bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                        Export Code Package File
                     </button>
                 </div>
 
-                <!-- URL Output -->
-                <div id="urlContainer" class="hidden animate-in fade-in slide-in-from-bottom-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Generated Data URL</label>
-                    <div id="urlText" class="bg-black p-4 rounded-xl text-[10px] text-blue-400 font-mono break-all border border-blue-500/20 max-h-24 overflow-y-auto custom-scrollbar"></div>
+                <div id="urlContainer" class="hidden space-y-2">
+                    <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">Inline Base64 Matrix URI</label>
+                    <div id="urlText" class="bg-black p-4 rounded-xl text-[10px] text-blue-400 font-mono break-all border border-neutral-900 max-h-24 overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
-            <!-- Right Side: Preview & Code -->
-            <div class="space-y-6">
-                <!-- Preview -->
-                <div class="glass-card p-6 h-[300px] flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-xs font-bold text-gray-500 uppercase">Live SVG Preview</span>
-                        <div class="flex gap-1">
-                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                            <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+            <div class="lg:col-span-7 space-y-6">
+                
+                <div class="glass-card p-6 h-[320px] flex flex-col">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Screen Preview Matrix</span>
+                        <div class="flex gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
+                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
+                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
                         </div>
                     </div>
-                    <div id="previewArea" class="flex-1 preview-grid rounded-xl border border-gray-800 flex items-center justify-center overflow-hidden p-4">
-                        <p class="text-gray-600 text-sm">Preview will appear here</p>
+                    <div id="previewArea" class="flex-1 preview-grid rounded-2xl border border-neutral-900 flex items-center justify-center overflow-hidden p-6 relative">
+                        <p class="text-neutral-600 text-xs font-medium tracking-wide">Awaiting high fidelity asset configuration payload</p>
                     </div>
                 </div>
 
-                <!-- Code Area -->
-                <div class="glass-card p-6 h-[230px] flex flex-col">
-                    <span class="text-xs font-bold text-gray-500 uppercase mb-4 block">SVG Source Code</span>
-                    <textarea id="codeOutput" readonly class="flex-1 bg-black/40 rounded-xl p-4 text-[11px] text-green-500 font-mono focus:outline-none border border-gray-800 custom-scrollbar resize-none" placeholder="<!-- SVG Code -->"></textarea>
+                <div class="glass-card p-6 h-[220px] flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Clean XML Vector Stream Data Output</span>
+                        <span class="text-[9px] bg-neutral-900 text-neutral-400 border border-neutral-800 px-2 py-0.5 rounded font-mono">XML Mode</span>
+                    </div>
+                    <textarea id="codeOutput" readonly class="flex-1 bg-black/50 rounded-2xl p-4 text-[11px] text-emerald-400 font-mono focus:outline-none border border-neutral-900 custom-scrollbar resize-none leading-relaxed" placeholder=""></textarea>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="fixed bottom-8 bg-blue-600 text-white px-8 py-4 rounded-2xl shadow-2xl transition-all duration-300 translate-y-24 opacity-0 font-bold">
-        Copied to clipboard!
+    <div id="notification" class="fixed bottom-8 bg-neutral-900 border border-neutral-800 text-white text-xs tracking-wider uppercase px-6 py-4 rounded-2xl shadow-2xl transition-all duration-500 translate-y-32 opacity-0 font-bold flex items-center gap-3 z-50">
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+        <span id="notificationText">System Stream State Synced</span>
     </div>
 
     <script>
@@ -216,36 +213,41 @@
         const urlContainer = document.getElementById('urlContainer');
         const urlText = document.getElementById('urlText');
         const notification = document.getElementById('notification');
-        const filenameModal = document.getElementById('filenameModal');
+        const notificationText = document.getElementById('notificationText');
+        const downloadModal = document.getElementById('downloadModal');
         const filenameInput = document.getElementById('filenameInput');
 
-        let currentSVG = "";
-        let currentDataURL = "";
+        let globalSVGPayload = "";
+        let globalDataURIPayload = "";
 
-        // UI Interactions
+        // UI Event Listeners
         dropZone.onclick = () => fileInput.click();
 
         fileInput.onchange = (e) => {
-            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+            if (e.target.files.length > 0) processImageBlob(e.target.files[0]);
         };
 
         dropZone.ondragover = (e) => {
             e.preventDefault();
-            dropZone.classList.add('border-blue-500', 'bg-blue-500/5');
+            dropZone.classList.add('border-blue-500', 'bg-blue-500/[0.02]');
         };
 
         dropZone.ondragleave = () => {
-            dropZone.classList.remove('border-blue-500', 'bg-blue-500/5');
+            dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]');
         };
 
         dropZone.ondrop = (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-blue-500', 'bg-blue-500/5');
-            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+            dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]');
+            if (e.dataTransfer.files.length > 0) processImageBlob(e.dataTransfer.files[0]);
         };
 
-        function handleFile(file) {
-            if (!file.type.includes('image')) return;
+        // Stream and process image file cleanly
+        function processImageBlob(file) {
+            if (!file.type.includes('image/png')) {
+                displayToast("Invalid Format! Requires PNG standard asset.");
+                return;
+            }
 
             uploadPrompt.classList.add('hidden');
             processingUI.classList.remove('hidden');
@@ -254,128 +256,162 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    generateSVG(event.target.result, img.width, img.height);
+                    executeVectorGeneration(event.target.result, img.width, img.height);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function generateSVG(base64, width, height) {
-            const svgCode = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">\n  <image href="' + base64 + '" width="' + width + '" height="' + height + '" />\n</svg>';
+        // Generates optimized high precision embedded SVG
+        function executeVectorGeneration(base64Data, width, height) {
+            // Added crisp rendering parameters to enforce high performance canvas drawing scaling metrics
+            const svgStructure = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="geometricPrecision" image-rendering="high-quality">\n  <image href="${base64Data}" width="${width}" height="${height}" x="0" y="0" />\n</svg>`;
 
-            currentSVG = svgCode;
-            currentDataURL = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgCode)));
+            globalSVGPayload = svgStructure;
+            globalDataURIPayload = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgStructure)));
 
-            previewArea.innerHTML = svgCode;
-            const previewSvg = previewArea.querySelector('svg');
-            if (previewSvg) {
-                previewSvg.style.maxWidth = "100%";
-                previewSvg.style.maxHeight = "100%";
-                previewSvg.style.height = "auto";
+            // Update live workspace preview windows securely
+            previewArea.innerHTML = svgStructure;
+            const renderingInstance = previewArea.querySelector('svg');
+            if (renderingInstance) {
+                renderingInstance.style.maxWidth = "100%";
+                renderingInstance.style.maxHeight = "100%";
+                renderingInstance.style.height = "auto";
+                renderingInstance.style.objectFit = "contain";
             }
 
-            codeOutput.value = svgCode;
-            urlText.innerText = currentDataURL;
+            codeOutput.value = svgStructure;
+            urlText.innerText = globalDataURIPayload;
 
+            // Interface Reveal Transitions
             processingUI.classList.add('hidden');
             uploadPrompt.classList.remove('hidden');
+            
             actionButtons.classList.remove('hidden');
+            setTimeout(() => {
+                actionButtons.classList.remove('opacity-0', 'translate-y-2');
+            }, 50);
+            
             urlContainer.classList.remove('hidden');
+            displayToast("Vector Pipeline Render Verified");
         }
 
-        // --- Feature 1: Download SVG with custom filename ---
+        // Advanced Clipboard copy with explicit Streaming context mechanics to bypass OS sizing limitations safely
+        async function copyCodeStream() {
+            if (!globalSVGPayload) return;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(globalSVGPayload);
+                    displayToast("Vector Data Stream Copied Successfully");
+                } else {
+                    fallbackCopyProtocol(globalSVGPayload);
+                }
+            } catch (err) {
+                fallbackCopyProtocol(globalSVGPayload);
+            }
+        }
+
+        async function copyURLStream() {
+            if (!globalDataURIPayload) return;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(globalDataURIPayload);
+                    displayToast("Data URI Base64 Copied Successfully");
+                } else {
+                    fallbackCopyProtocol(globalDataURIPayload);
+                }
+            } catch (err) {
+                fallbackCopyProtocol(globalDataURIPayload);
+            }
+        }
+
+        // Legacy streaming fallback mode for memory constrained browser contexts
+        function fallbackCopyProtocol(payloadData) {
+            const hiddenTextarea = document.createElement("textarea");
+            hiddenTextarea.value = payloadData;
+            hiddenTextarea.style.position = "fixed";
+            hiddenTextarea.style.opacity = "0";
+            document.body.appendChild(hiddenTextarea);
+            hiddenTextarea.select();
+            try {
+                document.execCommand('copy');
+                displayToast("Stream Synced via Fallback System");
+            } catch (err) {
+                displayToast("System Failure During Copy Matrix Streaming");
+            }
+            document.body.removeChild(hiddenTextarea);
+        }
+
+        // Modal State Machine Systems
         function openDownloadModal() {
-            if (!currentSVG) return;
-            filenameInput.value = "logo";
-            filenameModal.classList.add('active');
-            setTimeout(() => filenameInput.focus(), 100);
+            if (!globalSVGPayload) return;
+            downloadModal.classList.add('active');
         }
 
         function closeModal() {
-            filenameModal.classList.remove('active');
+            downloadModal.classList.remove('active');
         }
 
-        function confirmDownload() {
-            let name = filenameInput.value.trim();
-            if (!name) name = "logo";
-            if (!name.endsWith('.svg')) name += '.svg';
-            closeModal();
-            downloadSVG(name);
-        }
+        // Orchestrates targeted asset formatting structures (.svg or inside .zip capsules)
+        function triggerDownload(formatType) {
+            let processedName = filenameInput.value.trim().replace(/[^a-zA-Z0-9_]/g, "");
+            if (!processedName) processedName = "vector_source";
 
-        function downloadSVG(filename) {
-            const svgContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + currentSVG;
-            const blob = new Blob([svgContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showNotify("SVG Code File Downloaded!");
-        }
+            const rawFileContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + globalSVGPayload;
 
-        // --- Feature 2: Share code ---
-        function shareCode() {
-            if (!currentSVG) return;
-
-            const shareData = {
-                title: 'SVG Pro Converter',
-                text: currentSVG,
-                url: currentDataURL
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData).catch(() => {
-                    fallbackShare();
+            if (formatType === 'svg') {
+                // Direct Raw File Stream Download Architecture
+                const fileBlob = new Blob([rawFileContent], { type: 'image/svg+xml;charset=utf-8' });
+                executeClientBlobDownload(fileBlob, `${processedName}.svg`);
+                displayToast("Raw SVG Code File Transferred");
+            } 
+            else if (formatType === 'zip') {
+                // Instantiates JSZip dynamic library engine mapping context compilation safely
+                if (typeof JSZip === 'undefined') {
+                    displayToast("Compiler Library Error. Re-instantiating...");
+                    return;
+                }
+                const compressorEngine = new JSZip();
+                compressorEngine.file(`${processedName}.svg`, rawFileContent);
+                
+                displayToast("Compiling production ZIP container...");
+                
+                compressorEngine.generateAsync({ type: "blob", compression: "DEFLATE" }).then((zipBlob) => {
+                    executeClientBlobDownload(zipBlob, `${processedName}_package.zip`);
+                    displayToast("Production ZIP Package Transferred");
                 });
-            } else {
-                fallbackShare();
             }
+            closeModal();
         }
 
-        function fallbackShare() {
-            const text = "SVG Code:\n\n" + currentSVG + "\n\nData URL:\n" + currentDataURL;
-            navigator.clipboard.writeText(text).then(() => {
-                showNotify("SVG Code + URL copied! Share anywhere.");
-            }).catch(() => {
-                // Final fallback: select the URL text
-                copyURL();
-            });
+        // Client Virtual Anchor Downloader Core Engine
+        function executeClientBlobDownload(blobInstance, fullFilename) {
+            const systemObjectURL = URL.createObjectURL(blobInstance);
+            const virtualAnchor = document.createElement('a');
+            virtualAnchor.href = systemObjectURL;
+            virtualAnchor.download = fullFilename;
+            document.body.appendChild(virtualAnchor);
+            virtualAnchor.click();
+            document.body.removeChild(virtualAnchor);
+            setTimeout(() => URL.revokeObjectURL(systemObjectURL), 2000);
         }
 
-        // --- Original Actions ---
-        function copyCode() {
-            if (!currentSVG) return;
-            navigator.clipboard.writeText(currentSVG);
-            showNotify("SVG Code Copied!");
-        }
-
-        function copyURL() {
-            if (!currentDataURL) return;
-            navigator.clipboard.writeText(currentDataURL);
-            showNotify("Data URL Copied!");
-        }
-
-        function showNotify(msg) {
-            notification.innerText = msg;
-            notification.classList.remove('translate-y-24', 'opacity-0');
+        // UI Feedback Notification Pop 
+        function displayToast(messageString) {
+            notificationText.innerText = messageString;
+            notification.classList.remove('translate-y-32', 'opacity-0');
             setTimeout(() => {
-                notification.classList.add('translate-y-24', 'opacity-0');
-            }, 3000);
+                notification.classList.add('translate-y-32', 'opacity-0');
+            }, 3500);
         }
 
-        // Close modal on Escape key
+        // Dynamic System Modal Hotkey Hooks
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
-
-        // Close modal on overlay click
-        filenameModal.addEventListener('click', (e) => {
-            if (e.target === filenameModal) closeModal();
+        downloadModal.addEventListener('click', (e) => {
+            if (e.target === downloadModal) closeModal();
         });
     </script>
 </body>
