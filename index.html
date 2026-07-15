@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG PRO - Premium Production Converter</title>
+    <title>SVG PRO - Premium Vectorizer & Production Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -71,10 +71,14 @@
             display: flex;
             opacity: 1;
         }
+        input[type="range"] {
+            accent-color: #3b82f6;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-12">
 
+    <!-- Modal System -->
     <div id="downloadModal" class="modal-overlay">
         <div class="glass-card bg-[#0b0b0f] border border-neutral-800 p-8 w-full max-w-md mx-4 shadow-2xl space-y-6">
             <div>
@@ -111,27 +115,30 @@
         </div>
     </div>
 
+    <!-- Main Container Layout -->
     <div class="w-full max-w-6xl space-y-10 relative z-10">
         
         <div class="text-center space-y-3">
             <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full">
                 <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">v2.5 High-Fidelity Engine</span>
+                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">v3.0 Ultra-Fidelity Mathematical Path Tracer</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-400">
-                SVG PRO CONVERTER
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500">
+                SVG PRO TRACER
             </h1>
-            <p class="text-neutral-400 text-sm md:text-base font-light max-w-xl mx-auto">
-                Transform assets into production-grade vector containers with unlimited payload stream streaming architecture.
+            <p class="text-neutral-400 text-sm md:text-base font-light max-w-2xl mx-auto">
+                Trace transparent PNG masks directly into mathematical bezier curve structures. No raster images embedded—just pure, infinitely scaleable vector nodes.
             </p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <div class="lg:col-span-5 glass-card p-6 md:p-8 space-y-6">
+            <!-- Left Controls Sidebar -->
+            <div class="lg:col-span-5 space-y-6">
                 
-                <div id="dropZone" class="border-2 border-dashed border-neutral-800 rounded-2xl p-10 text-center hover:border-blue-500/50 hover:bg-blue-500/[0.01] transition-all duration-300 cursor-pointer group relative overflow-hidden">
-                    <input type="file" id="fileInput" class="hidden" accept="image/png">
+                <!-- Upload Container -->
+                <div id="dropZone" class="glass-card p-6 border-2 border-dashed border-neutral-800 rounded-3xl p-8 text-center hover:border-blue-500/50 hover:bg-blue-500/[0.01] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+                    <input type="file" id="fileInput" class="hidden" accept="image/png, image/jpeg">
                     
                     <div id="uploadPrompt" class="space-y-4">
                         <div class="bg-neutral-900 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-neutral-800 group-hover:scale-105 group-hover:border-blue-500/30 transition-all duration-300">
@@ -139,20 +146,103 @@
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-neutral-200">Import Target File</h3>
-                            <p class="text-neutral-500 text-xs mt-1">Supports alpha channel transparent PNG</p>
+                            <p class="text-neutral-500 text-xs mt-1 font-medium">Supports transparent PNG, JPEG & solid icons</p>
                         </div>
                     </div>
 
                     <div id="processingUI" class="hidden flex flex-col items-center py-4">
                         <div class="loader mb-4"></div>
-                        <p class="text-blue-400 text-xs font-bold uppercase tracking-wider animate-pulse">Streaming Memory Buffers...</p>
+                        <p class="text-blue-400 text-xs font-bold uppercase tracking-wider animate-pulse">Scanning Pixels & Compiling Paths...</p>
                     </div>
                 </div>
 
+                <!-- Engine Settings & Customizations (Revealed after upload) -->
+                <div id="vectorSettingsPanel" class="hidden glass-card p-6 md:p-8 space-y-6 transition-all duration-500">
+                    <h2 class="text-sm font-bold text-neutral-400 uppercase tracking-widest border-b border-neutral-900 pb-3">Vector Engine Settings</h2>
+                    
+                    <!-- Trace Mode & Scale -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Trace Mode</label>
+                            <select id="engineMode" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                                <option value="alpha">Alpha Transparent</option>
+                                <option value="luma">Luma Threshold</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Output Size</label>
+                            <select id="svgSize" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
+                                <option value="responsive">Responsive (Scale)</option>
+                                <option value="24">24 x 24 (UI Icon)</option>
+                                <option value="512">512 x 512 (High-Res)</option>
+                                <option value="1024">1024 x 1024 (Billboard)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Threshold Tuning -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                            <span class="text-neutral-500">Edge Sensitivity</span>
+                            <span id="thresholdVal" class="text-blue-400">128</span>
+                        </div>
+                        <input type="range" id="edgeThreshold" min="10" max="245" value="128" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Curve Smoothing -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                            <span class="text-neutral-500">Path Smoothing</span>
+                            <span id="smoothVal" class="text-blue-400">2</span>
+                        </div>
+                        <input type="range" id="pathSmooth" min="0" max="6" value="2" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Speckle Filter -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                            <span class="text-neutral-500">Speckle Noise Filter</span>
+                            <span id="noiseVal" class="text-blue-400">5px</span>
+                        </div>
+                        <input type="range" id="noiseFilter" min="2" max="40" value="5" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- Style Customizer -->
+                    <div class="border-t border-neutral-900 pt-5 space-y-4">
+                        <h3 class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Styling & Customizer</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Fill Color</label>
+                                <div class="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-1.5">
+                                    <input type="color" id="fillColor" value="#3b82f6" class="w-6 h-6 bg-transparent border-0 cursor-pointer rounded-md">
+                                    <span id="fillHex" class="text-[11px] font-mono text-neutral-400">#3B82F6</span>
+                                </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Stroke Color</label>
+                                <div class="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-1.5">
+                                    <input type="color" id="strokeColor" value="#000000" class="w-6 h-6 bg-transparent border-0 cursor-pointer rounded-md">
+                                    <span id="strokeHex" class="text-[11px] font-mono text-neutral-400">#000000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+                                <span class="text-neutral-500">Stroke Thickness</span>
+                                <span id="strokeVal" class="text-blue-400">0px</span>
+                            </div>
+                            <input type="range" id="strokeWidth" min="0" max="10" value="0" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button Matrix -->
                 <div id="actionButtons" class="hidden grid grid-cols-2 gap-3 opacity-0 transform translate-y-2 transition-all duration-500">
                     <button onclick="copyCodeStream()" class="btn-action p-4 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-blue-950/40">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                        Copy Vector
+                        Copy Vector Code
                     </button>
                     <button onclick="copyURLStream()" class="btn-action p-4 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
@@ -160,48 +250,48 @@
                     </button>
                     <button onclick="openDownloadModal()" class="btn-action col-span-2 p-4 bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-                        Export Code Package File
+                        Export Production Package
                     </button>
-                </div>
-
-                <div id="urlContainer" class="hidden space-y-2">
-                    <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block">Inline Base64 Matrix URI</label>
-                    <div id="urlText" class="bg-black p-4 rounded-xl text-[10px] text-blue-400 font-mono break-all border border-neutral-900 max-h-24 overflow-y-auto custom-scrollbar"></div>
                 </div>
             </div>
 
+            <!-- Right Workspace Display Panels -->
             <div class="lg:col-span-7 space-y-6">
                 
-                <div class="glass-card p-6 h-[320px] flex flex-col">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Screen Preview Matrix</span>
+                <!-- Live High Fidelity Vector Viewport -->
+                <div class="glass-card p-6 h-[380px] flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Scale Preview Matrix</span>
                         <div class="flex gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
-                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
-                            <span class="w-2 h-2 rounded-full bg-neutral-800"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500/20"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-pulse"></span>
                         </div>
                     </div>
-                    <div id="previewArea" class="flex-1 preview-grid rounded-2xl border border-neutral-900 flex items-center justify-center overflow-hidden p-6 relative">
+                    <div id="previewArea" class="flex-1 preview-grid rounded-2xl border border-neutral-900 flex items-center justify-center overflow-hidden p-8 relative">
                         <p class="text-neutral-600 text-xs font-medium tracking-wide">Awaiting high fidelity asset configuration payload</p>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 h-[220px] flex flex-col">
+                <!-- Clean Clean XML Output (Real Vectors!) -->
+                <div class="glass-card p-6 h-[250px] flex flex-col">
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Clean XML Vector Stream Data Output</span>
-                        <span class="text-[9px] bg-neutral-900 text-neutral-400 border border-neutral-800 px-2 py-0.5 rounded font-mono">XML Mode</span>
+                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Pure XML Vector Mathematics</span>
+                        <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">Dynamic Node Paths</span>
                     </div>
-                    <textarea id="codeOutput" readonly class="flex-1 bg-black/50 rounded-2xl p-4 text-[11px] text-emerald-400 font-mono focus:outline-none border border-neutral-900 custom-scrollbar resize-none leading-relaxed" placeholder=""></textarea>
+                    <textarea id="codeOutput" readonly class="flex-1 bg-black/50 rounded-2xl p-4 text-[11px] text-emerald-400 font-mono focus:outline-none border border-neutral-900 custom-scrollbar resize-none leading-relaxed" placeholder="Target SVG code will generate here without base64 wrappers..."></textarea>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Notification Engine -->
     <div id="notification" class="fixed bottom-8 bg-neutral-900 border border-neutral-800 text-white text-xs tracking-wider uppercase px-6 py-4 rounded-2xl shadow-2xl transition-all duration-500 translate-y-32 opacity-0 font-bold flex items-center gap-3 z-50">
         <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
         <span id="notificationText">System Stream State Synced</span>
     </div>
 
+    <!-- Script Processing Engine -->
     <script>
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
@@ -210,45 +300,60 @@
         const previewArea = document.getElementById('previewArea');
         const codeOutput = document.getElementById('codeOutput');
         const actionButtons = document.getElementById('actionButtons');
-        const urlContainer = document.getElementById('urlContainer');
-        const urlText = document.getElementById('urlText');
+        const vectorSettingsPanel = document.getElementById('vectorSettingsPanel');
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const downloadModal = document.getElementById('downloadModal');
         const filenameInput = document.getElementById('filenameInput');
 
+        // Dynamic Configuration State Node
+        const engineMode = document.getElementById('engineMode');
+        const svgSize = document.getElementById('svgSize');
+        const edgeThreshold = document.getElementById('edgeThreshold');
+        const pathSmooth = document.getElementById('pathSmooth');
+        const noiseFilter = document.getElementById('noiseFilter');
+        const fillColor = document.getElementById('fillColor');
+        const strokeColor = document.getElementById('strokeColor');
+        const strokeWidth = document.getElementById('strokeWidth');
+
+        let rawSourceImg = null;
         let globalSVGPayload = "";
         let globalDataURIPayload = "";
 
-        // UI Event Listeners
+        // UI Trigger Mappings
         dropZone.onclick = () => fileInput.click();
 
         fileInput.onchange = (e) => {
-            if (e.target.files.length > 0) processImageBlob(e.target.files[0]);
+            if (e.target.files.length > 0) loadAndVerifyImage(e.target.files[0]);
         };
 
-        dropZone.ondragover = (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-blue-500', 'bg-blue-500/[0.02]');
-        };
-
-        dropZone.ondragleave = () => {
-            dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]');
-        };
-
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-500/[0.02]'); };
+        dropZone.ondragleave = () => { dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]'); };
         dropZone.ondrop = (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]');
-            if (e.dataTransfer.files.length > 0) processImageBlob(e.dataTransfer.files[0]);
+            if (e.dataTransfer.files.length > 0) loadAndVerifyImage(e.dataTransfer.files[0]);
         };
 
-        // Stream and process image file cleanly
-        function processImageBlob(file) {
-            if (!file.type.includes('image/png')) {
-                displayToast("Invalid Format! Requires PNG standard asset.");
-                return;
-            }
+        // Hot Realtime Event Binding Configuration
+        [engineMode, svgSize, edgeThreshold, pathSmooth, noiseFilter, fillColor, strokeColor, strokeWidth].forEach(ctrl => {
+            ctrl.addEventListener('input', () => {
+                updateValueMetrics();
+                triggerDynamicRecompilation();
+            });
+        });
 
+        function updateValueMetrics() {
+            document.getElementById('thresholdVal').innerText = edgeThreshold.value;
+            document.getElementById('smoothVal').innerText = pathSmooth.value;
+            document.getElementById('noiseVal').innerText = noiseFilter.value + 'px';
+            document.getElementById('strokeVal').innerText = strokeWidth.value + 'px';
+            document.getElementById('fillHex').innerText = fillColor.value.toUpperCase();
+            document.getElementById('strokeHex').innerText = strokeColor.value.toUpperCase();
+        }
+
+        // Processing Pipeline Core
+        function loadAndVerifyImage(file) {
             uploadPrompt.classList.add('hidden');
             processingUI.classList.remove('hidden');
 
@@ -256,57 +361,280 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    executeVectorGeneration(event.target.result, img.width, img.height);
+                    rawSourceImg = img;
+                    vectorSettingsPanel.classList.remove('hidden');
+                    updateValueMetrics();
+                    triggerDynamicRecompilation();
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Generates optimized high precision embedded SVG
-        function executeVectorGeneration(base64Data, width, height) {
-            // Added crisp rendering parameters to enforce high performance canvas drawing scaling metrics
-            const svgStructure = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="geometricPrecision" image-rendering="high-quality">\n  <image href="${base64Data}" width="${width}" height="${height}" x="0" y="0" />\n</svg>`;
+        function triggerDynamicRecompilation() {
+            if (!rawSourceImg) return;
+            
+            // Build temporary offscreen canvas matrix for vector reading optimization (Max sizing optimization to bypass lag)
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Scaling limit for high performance processing
+            const maxDimension = 512; 
+            let width = rawSourceImg.width;
+            let height = rawSourceImg.height;
 
-            globalSVGPayload = svgStructure;
-            globalDataURIPayload = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgStructure)));
-
-            // Update live workspace preview windows securely
-            previewArea.innerHTML = svgStructure;
-            const renderingInstance = previewArea.querySelector('svg');
-            if (renderingInstance) {
-                renderingInstance.style.maxWidth = "100%";
-                renderingInstance.style.maxHeight = "100%";
-                renderingInstance.style.height = "auto";
-                renderingInstance.style.objectFit = "contain";
+            if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                    height = Math.round((height * maxDimension) / width);
+                    width = maxDimension;
+                } else {
+                    width = Math.round((width * maxDimension) / height);
+                    height = maxDimension;
+                }
             }
 
-            codeOutput.value = svgStructure;
-            urlText.innerText = globalDataURIPayload;
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(rawSourceImg, 0, 0, width, height);
 
-            // Interface Reveal Transitions
+            const imageData = ctx.getImageData(0, 0, width, height);
+            executeTracerAlgorithm(imageData, width, height);
+        }
+
+        // Pure JS Contour Tracking & Optimization Vector Tracer (Engine 3.0 Core)
+        function executeTracerAlgorithm(imageData, width, height) {
+            const data = imageData.data;
+            const threshold = parseInt(edgeThreshold.value);
+            const smoothing = parseInt(pathSmooth.value);
+            const noise = parseInt(noiseFilter.value);
+            const mode = engineMode.value;
+
+            // Generate Binary Grid Layer
+            const grid = new Uint8Array(width * height);
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const a = data[i + 3];
+                const idx = i / 4;
+
+                let isSolid = false;
+                if (mode === 'alpha') {
+                    isSolid = a > threshold;
+                } else {
+                    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+                    isSolid = luma < threshold && a > 40; 
+                }
+                grid[idx] = isSolid ? 1 : 0;
+            }
+
+            const contours = findContours(grid, width, height);
+            const paths = [];
+
+            // Run Path Reduction & Smoothing Algorithm Pass
+            contours.forEach(contour => {
+                if (contour.length < noise) return; // Clean noise speckles
+
+                let smoothed = applyMovingAverage(contour, smoothing);
+                smoothed = simplifyCollinearPaths(smoothed, 1.2);
+                
+                if (smoothed.length >= 3) {
+                    paths.push(buildBezierPathString(smoothed));
+                }
+            });
+
+            generateSVGPayload(paths, width, height);
+        }
+
+        // Contour Tracing Engine (Moore-Neighbor Algorithm Integration)
+        function findContours(grid, width, height) {
+            const visited = new Uint8Array(width * height);
+            const contours = [];
+            const dirs = [
+                [0, -1], [1, -1], [1, 0], [1, 1],
+                [0, 1], [-1, 1], [-1, 0], [-1, -1]
+            ];
+
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = y * width + x;
+                    if (grid[idx] === 1 && !visited[idx]) {
+                        // Edge Check detection
+                        let isEdge = false;
+                        for (let d = 0; d < 8; d += 2) {
+                            if (grid[(y + dirs[d][1]) * width + (x + dirs[d][0])] === 0) {
+                                isEdge = true;
+                                break;
+                            }
+                        }
+
+                        if (isEdge) {
+                            const contour = [];
+                            let cx = x;
+                            let cy = y;
+                            let bDir = 6;
+                            let startFlag = false;
+                            
+                            let loopLimit = 0;
+                            const maxLoops = width * height;
+
+                            while (loopLimit < maxLoops) {
+                                contour.push([cx, cy]);
+                                visited[cy * width + cx] = 1;
+
+                                let found = false;
+                                let searchDir = (bDir + 1) % 8;
+
+                                for (let i = 0; i < 8; i++) {
+                                    const dIdx = (searchDir + i) % 8;
+                                    const nx = cx + dirs[dIdx][0];
+                                    const ny = cy + dirs[dIdx][1];
+
+                                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                                        if (grid[ny * width + nx] === 1) {
+                                            cx = nx;
+                                            cy = ny;
+                                            bDir = (dIdx + 4) % 8;
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!found || (cx === x && cy === y)) break;
+                                loopLimit++;
+                            }
+                            if (contour.length > 3) contours.push(contour);
+                        }
+                    }
+                }
+            }
+            return contours;
+        }
+
+        // Curve Optimizer - Lowpass filter smoothing metrics
+        function applyMovingAverage(points, size) {
+            if (size === 0 || points.length < 3) return points;
+            const smoothed = [];
+            const len = points.length;
+            for (let i = 0; i < len; i++) {
+                let sx = 0, sy = 0, count = 0;
+                for (let k = -size; k <= size; k++) {
+                    const idx = (i + k + len) % len;
+                    sx += points[idx][0];
+                    sy += points[idx][1];
+                    count++;
+                }
+                smoothed.push([sx / count, sy / count]);
+            }
+            return smoothed;
+        }
+
+        // Collinearity points cleaner
+        function simplifyCollinearPaths(points, tol) {
+            if (points.length < 3) return points;
+            const res = [points[0]];
+            let last = points[0];
+
+            for (let i = 1; i < points.length - 1; i++) {
+                const curr = points[i];
+                const next = points[i + 1];
+
+                const area = Math.abs((next[1] - last[1]) * curr[0] - (next[0] - last[0]) * curr[1] + next[0] * last[1] - next[1] * last[0]);
+                const base = Math.hypot(next[0] - last[0], next[1] - last[1]);
+                const dist = base === 0 ? 0 : area / base;
+
+                if (dist > tol) {
+                    res.push(curr);
+                    last = curr;
+                }
+            }
+            res.push(points[points.length - 1]);
+            return res;
+        }
+
+        // Quadratic Curve Generator for ultra smooth mathematical vector lines
+        function buildBezierPathString(points) {
+            if (points.length === 0) return "";
+            let d = `M ${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
+            for (let i = 1; i < points.length; i++) {
+                const prev = points[i - 1];
+                const curr = points[i];
+                const mx = (prev[0] + curr[0]) / 2;
+                const my = (prev[1] + curr[1]) / 2;
+                d += ` Q ${prev[0].toFixed(1)} ${prev[1].toFixed(1)}, ${mx.toFixed(1)} ${my.toFixed(1)}`;
+            }
+            d += ` L ${points[points.length - 1][0].toFixed(1)} ${points[points.length - 1][1].toFixed(1)} Z`;
+            return d;
+        }
+
+        // Final SVG Markup Compiler Engine with Dynamic Dimensions
+        function generateSVGPayload(paths, origW, origH) {
+            if (paths.length === 0) {
+                previewArea.innerHTML = `<p class="text-neutral-600 text-xs font-medium tracking-wide">Error: Adjust Edge Threshold slider to reveal shapes</p>`;
+                return;
+            }
+
+            const sizeSelection = svgSize.value;
+            let displayW = origW;
+            let displayH = origH;
+
+            if (sizeSelection !== 'responsive') {
+                const parsedDim = parseInt(sizeSelection);
+                displayW = parsedDim;
+                displayH = Math.round((origH * parsedDim) / origW);
+            }
+
+            const fullPathData = paths.join(" ");
+            const svgFill = fillColor.value;
+            const svgStroke = strokeColor.value;
+            const svgStrokeW = strokeWidth.value;
+
+            // Generate clean vector representation code
+            let svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" `;
+            if (sizeSelection === 'responsive') {
+                svgMarkup += `viewBox="0 0 ${origW} ${origH}">\n`;
+            } else {
+                svgMarkup += `width="${displayW}" height="${displayH}" viewBox="0 0 ${origW} ${origH}">\n`;
+            }
+            
+            svgMarkup += `  <path d="${fullPathData}" fill="${svgFill}" fill-rule="evenodd"`;
+            if (parseFloat(svgStrokeW) > 0) {
+                svgMarkup += ` stroke="${svgStroke}" stroke-width="${svgStrokeW}" stroke-linejoin="round" stroke-linecap="round"`;
+            }
+            svgMarkup += ` />\n</svg>`;
+
+            globalSVGPayload = svgMarkup;
+            globalDataURIPayload = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgMarkup)));
+
+            // Update user viewport safely
+            previewArea.innerHTML = svgMarkup;
+            const activeNode = previewArea.querySelector('svg');
+            if (activeNode) {
+                activeNode.style.maxWidth = "100%";
+                activeNode.style.maxHeight = "100%";
+                activeNode.style.height = "auto";
+            }
+
+            codeOutput.value = svgMarkup;
+
+            // Interface Reveals
             processingUI.classList.add('hidden');
             uploadPrompt.classList.remove('hidden');
-            
             actionButtons.classList.remove('hidden');
             setTimeout(() => {
                 actionButtons.classList.remove('opacity-0', 'translate-y-2');
             }, 50);
-            
-            urlContainer.classList.remove('hidden');
-            displayToast("Vector Pipeline Render Verified");
+
+            displayToast("Vector Compiled Successfully");
         }
 
-        // Advanced Clipboard copy with explicit Streaming context mechanics to bypass OS sizing limitations safely
+        // Clipboard operations
         async function copyCodeStream() {
             if (!globalSVGPayload) return;
             try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(globalSVGPayload);
-                    displayToast("Vector Data Stream Copied Successfully");
-                } else {
-                    fallbackCopyProtocol(globalSVGPayload);
-                }
+                await navigator.clipboard.writeText(globalSVGPayload);
+                displayToast("SVG Code Copied to Clipboard");
             } catch (err) {
                 fallbackCopyProtocol(globalSVGPayload);
             }
@@ -315,35 +643,30 @@
         async function copyURLStream() {
             if (!globalDataURIPayload) return;
             try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(globalDataURIPayload);
-                    displayToast("Data URI Base64 Copied Successfully");
-                } else {
-                    fallbackCopyProtocol(globalDataURIPayload);
-                }
+                await navigator.clipboard.writeText(globalDataURIPayload);
+                displayToast("Data URI Base64 Copied");
             } catch (err) {
                 fallbackCopyProtocol(globalDataURIPayload);
             }
         }
 
-        // Legacy streaming fallback mode for memory constrained browser contexts
         function fallbackCopyProtocol(payloadData) {
-            const hiddenTextarea = document.createElement("textarea");
-            hiddenTextarea.value = payloadData;
-            hiddenTextarea.style.position = "fixed";
-            hiddenTextarea.style.opacity = "0";
-            document.body.appendChild(hiddenTextarea);
-            hiddenTextarea.select();
+            const ta = document.createElement("textarea");
+            ta.value = payloadData;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
             try {
                 document.execCommand('copy');
-                displayToast("Stream Synced via Fallback System");
+                displayToast("Copied via standard proxy channel");
             } catch (err) {
-                displayToast("System Failure During Copy Matrix Streaming");
+                displayToast("Copy failed");
             }
-            document.body.removeChild(hiddenTextarea);
+            document.body.removeChild(ta);
         }
 
-        // Modal State Machine Systems
+        // Modals Management
         function openDownloadModal() {
             if (!globalSVGPayload) return;
             downloadModal.classList.add('active');
@@ -353,66 +676,56 @@
             downloadModal.classList.remove('active');
         }
 
-        // Orchestrates targeted asset formatting structures (.svg or inside .zip capsules)
         function triggerDownload(formatType) {
             let processedName = filenameInput.value.trim().replace(/[^a-zA-Z0-9_]/g, "");
             if (!processedName) processedName = "vector_source";
 
-            const rawFileContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + globalSVGPayload;
+            const fileContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + globalSVGPayload;
 
             if (formatType === 'svg') {
-                // Direct Raw File Stream Download Architecture
-                const fileBlob = new Blob([rawFileContent], { type: 'image/svg+xml;charset=utf-8' });
-                executeClientBlobDownload(fileBlob, `${processedName}.svg`);
-                displayToast("Raw SVG Code File Transferred");
+                const blob = new Blob([fileContent], { type: 'image/svg+xml;charset=utf-8' });
+                executeClientDownload(blob, `${processedName}.svg`);
+                displayToast("SVG Vector Asset Exported");
             } 
             else if (formatType === 'zip') {
-                // Instantiates JSZip dynamic library engine mapping context compilation safely
                 if (typeof JSZip === 'undefined') {
-                    displayToast("Compiler Library Error. Re-instantiating...");
+                    displayToast("Compiler Error. Retry");
                     return;
                 }
-                const compressorEngine = new JSZip();
-                compressorEngine.file(`${processedName}.svg`, rawFileContent);
+                const zip = new JSZip();
+                zip.file(`${processedName}.svg`, fileContent);
                 
-                displayToast("Compiling production ZIP container...");
+                displayToast("Compressing ZIP encapsulator...");
                 
-                compressorEngine.generateAsync({ type: "blob", compression: "DEFLATE" }).then((zipBlob) => {
-                    executeClientBlobDownload(zipBlob, `${processedName}_package.zip`);
-                    displayToast("Production ZIP Package Transferred");
+                zip.generateAsync({ type: "blob", compression: "DEFLATE" }).then((blob) => {
+                    executeClientDownload(blob, `${processedName}_package.zip`);
+                    displayToast("Production ZIP Package Saved");
                 });
             }
             closeModal();
         }
 
-        // Client Virtual Anchor Downloader Core Engine
-        function executeClientBlobDownload(blobInstance, fullFilename) {
-            const systemObjectURL = URL.createObjectURL(blobInstance);
-            const virtualAnchor = document.createElement('a');
-            virtualAnchor.href = systemObjectURL;
-            virtualAnchor.download = fullFilename;
-            document.body.appendChild(virtualAnchor);
-            virtualAnchor.click();
-            document.body.removeChild(virtualAnchor);
-            setTimeout(() => URL.revokeObjectURL(systemObjectURL), 2000);
+        function executeClientDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
         }
 
-        // UI Feedback Notification Pop 
-        function displayToast(messageString) {
-            notificationText.innerText = messageString;
+        function displayToast(msg) {
+            notificationText.innerText = msg;
             notification.classList.remove('translate-y-32', 'opacity-0');
             setTimeout(() => {
                 notification.classList.add('translate-y-32', 'opacity-0');
-            }, 3500);
+            }, 3000);
         }
 
-        // Dynamic System Modal Hotkey Hooks
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-        downloadModal.addEventListener('click', (e) => {
-            if (e.target === downloadModal) closeModal();
-        });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+        downloadModal.addEventListener('click', (e) => { if (e.target === downloadModal) closeModal(); });
     </script>
 </body>
 </html>
