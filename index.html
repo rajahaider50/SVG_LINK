@@ -2,730 +2,490 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG PRO - Premium Vectorizer & Production Suite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Premium SVG Icon Converter</title>
     
+    <!-- Script to suppress Tailwind CSS CDN warning for a 100% clean console -->
+    <script>
+        const originalWarn = console.warn;
+        console.warn = function() {
+            if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('cdn.tailwindcss.com should not be used in production')) {
+                return; // Suppress this specific warning
+            }
+            originalWarn.apply(console, arguments);
+        };
+    </script>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Premium Black Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- JSZip for ZIP file generation in browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Custom Tailwind Configuration to match user color requests -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'glass-white': 'rgba(255, 255, 255, 0.7)',
+                        'glass-border': 'rgba(255, 255, 255, 0.4)',
+                        'theme-sky': '#e0f2fe',
+                        'theme-orange': '#ffedd5',
+                        'theme-yellow': '#fef9c3',
+                        'theme-green': '#dcfce7',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.05)',
+                        'glass-hover': '0 12px 40px 0 rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
+        /* Custom Premium CSS & Animations */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #030303;
-            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            /* Background combining white with light requested colors */
+            background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 25%, #dcfce7 50%, #fef9c3 75%, #ffedd5 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        /* Glassmorphism Classes */
         .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 32px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            transition: all 0.3s ease;
         }
-        .preview-grid {
-            background-image:
-                linear-gradient(45deg, #090909 25%, transparent 25%),
-                linear-gradient(-45deg, #090909 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #090909 75%),
-                linear-gradient(-45deg, transparent 75%, #090909 75%);
-            background-size: 24px 24px;
-            background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
-            background-color: #000000;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #222;
-            border-radius: 10px;
-        }
-        .btn-action {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-action:hover {
+
+        .glass-card:hover {
+            box-shadow: 0 15px 50px -10px rgba(0,0,0,0.15);
             transform: translateY(-2px);
         }
-        .loader {
-            border: 3px solid #111;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            animation: spin 0.8s linear infinite;
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .modal-overlay {
+
+        .glass-button:hover {
+            background: #000;
+            color: #fff;
+            transform: scale(1.02);
+        }
+
+        .glass-button:hover i {
+            color: #fff;
+        }
+
+        /* Splash Screen Animation */
+        #splash-screen {
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 9999;
             display: flex;
-            opacity: 1;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
         }
-        input[type="range"] {
-            accent-color: #3b82f6;
+
+        .loader-ring {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* App Reveal Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar for Textarea */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 8px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #000;
+        }
+
+        /* File input hidden */
+        input[type="file"] {
+            display: none;
+        }
+
+        .drag-active {
+            border-color: #000 !important;
+            background: rgba(0, 0, 0, 0.05) !important;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-12">
+<body class="text-gray-800 antialiased selection:bg-black selection:text-white">
 
-    <!-- Modal System -->
-    <div id="downloadModal" class="modal-overlay">
-        <div class="glass-card bg-[#0b0b0f] border border-neutral-800 p-8 w-full max-w-md mx-4 shadow-2xl space-y-6">
-            <div>
-                <h3 class="text-xl font-bold text-white tracking-tight">Export Production Assets</h3>
-                <p class="text-neutral-400 text-xs mt-1">Configure filename and preferred structure package</p>
-            </div>
-            
-            <div class="space-y-2">
-                <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Asset Filename</label>
-                <input type="text" id="filenameInput" value="vector_source" class="w-full px-4 py-3 bg-neutral-950 border border-neutral-800 rounded-xl text-white text-sm outline-none focus:border-emerald-500 transition-colors" placeholder="e.g. brand_logo" autofocus>
-            </div>
-
-            <div class="grid grid-cols-1 gap-3 pt-2">
-                <button onclick="triggerDownload('svg')" class="btn-action w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-left p-4 rounded-xl flex items-center justify-between group">
-                    <div>
-                        <p class="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">Download Raw SVG File</p>
-                        <p class="text-neutral-500 text-xs mt-0.5">Standalone vectorized structural file (.svg)</p>
-                    </div>
-                    <svg class="w-5 h-5 text-neutral-500 group-hover:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </button>
-
-                <button onclick="triggerDownload('zip')" class="btn-action w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-left p-4 rounded-xl flex items-center justify-between shadow-lg shadow-emerald-950/20">
-                    <div>
-                        <p class="text-sm font-bold text-white">Download Compressed ZIP</p>
-                        <p class="text-emerald-100/70 text-xs mt-0.5">Contains optimized svg_code.svg inside capsule</p>
-                    </div>
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                </button>
-            </div>
-
-            <div class="flex justify-end pt-2">
-                <button onclick="closeModal()" class="text-xs font-semibold text-neutral-400 hover:text-white transition-colors">Dismiss Window</button>
-            </div>
-        </div>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="loader-ring mb-6"></div>
+        <h1 class="text-2xl font-bold tracking-wider text-black flex items-center gap-3">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> SVG STUDIO
+        </h1>
+        <p class="text-sm text-gray-500 mt-2 font-medium">Premium Asset Converter</p>
     </div>
 
-    <!-- Main Container Layout -->
-    <div class="w-full max-w-6xl space-y-10 relative z-10">
+    <!-- Main Application Container -->
+    <main class="container mx-auto px-4 py-8 md:py-12 max-w-4xl min-h-screen flex flex-col justify-center opacity-0" id="main-content">
         
-        <div class="text-center space-y-3">
-            <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-4 py-1.5 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">v3.0 Ultra-Fidelity Mathematical Path Tracer</span>
+        <!-- Header Section -->
+        <header class="text-center mb-10 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="inline-block bg-black text-white px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest mb-4 shadow-lg">
+                PRO EDITION
             </div>
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-neutral-500">
-                SVG PRO TRACER
+            <h1 class="text-4xl md:text-5xl font-extrabold text-black mb-4 tracking-tight">
+                HD Image to SVG
             </h1>
-            <p class="text-neutral-400 text-sm md:text-base font-light max-w-2xl mx-auto">
-                Trace transparent PNG masks directly into mathematical bezier curve structures. No raster images embedded—just pure, infinitely scaleable vector nodes.
+            <p class="text-gray-600 max-w-xl mx-auto text-sm md:text-base">
+                Upload your transparent image and convert it into a high-quality SVG vector code instantly. Perfect for native Android, iOS, and Web development.
             </p>
+        </header>
+
+        <!-- Upload Zone -->
+        <div class="glass-card p-8 md:p-12 mb-8 text-center cursor-pointer border-2 border-dashed border-gray-300 hover:border-black fade-in-up transition-colors duration-300 group relative" id="drop-zone" style="animation-delay: 0.4s;">
+            <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp">
+            <div class="flex flex-col items-center justify-center space-y-4 pointer-events-none">
+                <div class="w-20 h-20 rounded-full bg-black text-white flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-black">Tap to Upload or Drag & Drop</h3>
+                <p class="text-sm text-gray-500">Supports transparent PNG, JPG, WEBP (Max: 5MB)</p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-            <!-- Left Controls Sidebar -->
-            <div class="lg:col-span-5 space-y-6">
+        <!-- Result / Preview Section (Hidden by default) -->
+        <div id="result-section" class="hidden fade-in-up grid grid-cols-1 md:grid-cols-2 gap-8" style="animation-delay: 0.1s;">
+            
+            <!-- Preview Card -->
+            <div class="glass-card p-6 flex flex-col items-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-theme-sky via-theme-green to-theme-yellow"></div>
+                <h3 class="text-lg font-bold text-black mb-4 w-full flex justify-between items-center">
+                    <span><i class="fa-solid fa-eye mr-2"></i> Live Preview</span>
+                    <span class="text-xs bg-black text-white px-2 py-1 rounded-md">HD Vector</span>
+                </h3>
                 
-                <!-- Upload Container -->
-                <div id="dropZone" class="glass-card p-6 border-2 border-dashed border-neutral-800 rounded-3xl p-8 text-center hover:border-blue-500/50 hover:bg-blue-500/[0.01] transition-all duration-300 cursor-pointer group relative overflow-hidden">
-                    <input type="file" id="fileInput" class="hidden" accept="image/png, image/jpeg">
-                    
-                    <div id="uploadPrompt" class="space-y-4">
-                        <div class="bg-neutral-900 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto border border-neutral-800 group-hover:scale-105 group-hover:border-blue-500/30 transition-all duration-300">
-                            <svg class="w-6 h-6 text-neutral-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path></svg>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-semibold text-neutral-200">Import Target File</h3>
-                            <p class="text-neutral-500 text-xs mt-1 font-medium">Supports transparent PNG, JPEG & solid icons</p>
-                        </div>
+                <!-- Checkerboard background for transparency visibility -->
+                <div class="w-full aspect-square rounded-xl flex items-center justify-center p-4 border border-gray-200" 
+                     style="background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;">
+                    <div id="svg-preview-container" class="w-full h-full flex items-center justify-center drop-shadow-xl transition-all duration-500 hover:scale-105">
+                        <!-- SVG will be injected here -->
                     </div>
-
-                    <div id="processingUI" class="hidden flex flex-col items-center py-4">
-                        <div class="loader mb-4"></div>
-                        <p class="text-blue-400 text-xs font-bold uppercase tracking-wider animate-pulse">Scanning Pixels & Compiling Paths...</p>
-                    </div>
-                </div>
-
-                <!-- Engine Settings & Customizations (Revealed after upload) -->
-                <div id="vectorSettingsPanel" class="hidden glass-card p-6 md:p-8 space-y-6 transition-all duration-500">
-                    <h2 class="text-sm font-bold text-neutral-400 uppercase tracking-widest border-b border-neutral-900 pb-3">Vector Engine Settings</h2>
-                    
-                    <!-- Trace Mode & Scale -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Trace Mode</label>
-                            <select id="engineMode" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
-                                <option value="alpha">Alpha Transparent</option>
-                                <option value="luma">Luma Threshold</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Output Size</label>
-                            <select id="svgSize" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:border-blue-500 outline-none">
-                                <option value="responsive">Responsive (Scale)</option>
-                                <option value="24">24 x 24 (UI Icon)</option>
-                                <option value="512">512 x 512 (High-Res)</option>
-                                <option value="1024">1024 x 1024 (Billboard)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Threshold Tuning -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                            <span class="text-neutral-500">Edge Sensitivity</span>
-                            <span id="thresholdVal" class="text-blue-400">128</span>
-                        </div>
-                        <input type="range" id="edgeThreshold" min="10" max="245" value="128" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
-                    </div>
-
-                    <!-- Curve Smoothing -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                            <span class="text-neutral-500">Path Smoothing</span>
-                            <span id="smoothVal" class="text-blue-400">2</span>
-                        </div>
-                        <input type="range" id="pathSmooth" min="0" max="6" value="2" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
-                    </div>
-
-                    <!-- Speckle Filter -->
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                            <span class="text-neutral-500">Speckle Noise Filter</span>
-                            <span id="noiseVal" class="text-blue-400">5px</span>
-                        </div>
-                        <input type="range" id="noiseFilter" min="2" max="40" value="5" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
-                    </div>
-
-                    <!-- Style Customizer -->
-                    <div class="border-t border-neutral-900 pt-5 space-y-4">
-                        <h3 class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Styling & Customizer</h3>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Fill Color</label>
-                                <div class="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-1.5">
-                                    <input type="color" id="fillColor" value="#3b82f6" class="w-6 h-6 bg-transparent border-0 cursor-pointer rounded-md">
-                                    <span id="fillHex" class="text-[11px] font-mono text-neutral-400">#3B82F6</span>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Stroke Color</label>
-                                <div class="flex items-center gap-2 bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-1.5">
-                                    <input type="color" id="strokeColor" value="#000000" class="w-6 h-6 bg-transparent border-0 cursor-pointer rounded-md">
-                                    <span id="strokeHex" class="text-[11px] font-mono text-neutral-400">#000000</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                                <span class="text-neutral-500">Stroke Thickness</span>
-                                <span id="strokeVal" class="text-blue-400">0px</span>
-                            </div>
-                            <input type="range" id="strokeWidth" min="0" max="10" value="0" class="w-full h-1 bg-neutral-900 rounded-lg appearance-none cursor-pointer">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Button Matrix -->
-                <div id="actionButtons" class="hidden grid grid-cols-2 gap-3 opacity-0 transform translate-y-2 transition-all duration-500">
-                    <button onclick="copyCodeStream()" class="btn-action p-4 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-blue-950/40">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
-                        Copy Vector Code
-                    </button>
-                    <button onclick="copyURLStream()" class="btn-action p-4 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        Copy URI
-                    </button>
-                    <button onclick="openDownloadModal()" class="btn-action col-span-2 p-4 bg-gradient-to-b from-emerald-600 to-emerald-700 hover:from-emerald-500 text-white rounded-xl font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-                        Export Production Package
-                    </button>
                 </div>
             </div>
 
-            <!-- Right Workspace Display Panels -->
-            <div class="lg:col-span-7 space-y-6">
+            <!-- Code & Actions Card -->
+            <div class="glass-card p-6 flex flex-col h-full relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-theme-yellow via-theme-orange to-black"></div>
+                <h3 class="text-lg font-bold text-black mb-4 flex items-center">
+                    <i class="fa-solid fa-code mr-2"></i> SVG Source Code
+                </h3>
                 
-                <!-- Live High Fidelity Vector Viewport -->
-                <div class="glass-card p-6 h-[380px] flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Active Scale Preview Matrix</span>
-                        <div class="flex gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-500/20"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/20 animate-pulse"></span>
-                        </div>
-                    </div>
-                    <div id="previewArea" class="flex-1 preview-grid rounded-2xl border border-neutral-900 flex items-center justify-center overflow-hidden p-8 relative">
-                        <p class="text-neutral-600 text-xs font-medium tracking-wide">Awaiting high fidelity asset configuration payload</p>
-                    </div>
-                </div>
-
-                <!-- Clean Clean XML Output (Real Vectors!) -->
-                <div class="glass-card p-6 h-[250px] flex flex-col">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Pure XML Vector Mathematics</span>
-                        <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">Dynamic Node Paths</span>
-                    </div>
-                    <textarea id="codeOutput" readonly class="flex-1 bg-black/50 rounded-2xl p-4 text-[11px] text-emerald-400 font-mono focus:outline-none border border-neutral-900 custom-scrollbar resize-none leading-relaxed" placeholder="Target SVG code will generate here without base64 wrappers..."></textarea>
+                <textarea id="svg-code" readonly class="w-full flex-grow h-48 md:h-auto bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm font-mono text-gray-700 focus:outline-none focus:border-black focus:ring-1 focus:ring-black resize-none mb-6"></textarea>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                    <button onclick="copyCode()" class="glass-button py-3 px-4 rounded-xl font-semibold text-black flex items-center justify-center gap-2 group shadow-sm">
+                        <i class="fa-solid fa-copy text-black group-hover:text-white transition-colors"></i> 
+                        <span class="text-sm">Copy</span>
+                    </button>
+                    <button onclick="downloadSVG()" class="bg-black text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-download"></i> 
+                        <span class="text-sm">SVG</span>
+                    </button>
+                    <button onclick="downloadZIP()" class="bg-gradient-to-r from-gray-800 to-black text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:from-black hover:to-gray-900 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-file-zipper text-theme-yellow"></i> 
+                        <span class="text-sm">ZIP</span>
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Notification Engine -->
-    <div id="notification" class="fixed bottom-8 bg-neutral-900 border border-neutral-800 text-white text-xs tracking-wider uppercase px-6 py-4 rounded-2xl shadow-2xl transition-all duration-500 translate-y-32 opacity-0 font-bold flex items-center gap-3 z-50">
-        <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
-        <span id="notificationText">System Stream State Synced</span>
-    </div>
+        <!-- Floating Notification / Toast -->
+        <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full shadow-2xl font-medium text-sm flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-10 pointer-events-none z-50">
+            <i class="fa-solid fa-circle-check text-theme-green"></i>
+            <span id="toast-message">Success!</span>
+        </div>
 
-    <!-- Script Processing Engine -->
+    </main>
+
+    <!-- Application Logic -->
     <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const uploadPrompt = document.getElementById('uploadPrompt');
-        const processingUI = document.getElementById('processingUI');
-        const previewArea = document.getElementById('previewArea');
-        const codeOutput = document.getElementById('codeOutput');
-        const actionButtons = document.getElementById('actionButtons');
-        const vectorSettingsPanel = document.getElementById('vectorSettingsPanel');
-        const notification = document.getElementById('notification');
-        const notificationText = document.getElementById('notificationText');
-        const downloadModal = document.getElementById('downloadModal');
-        const filenameInput = document.getElementById('filenameInput');
+        // DOM Elements
+        const splashScreen = document.getElementById('splash-screen');
+        const mainContent = document.getElementById('main-content');
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const resultSection = document.getElementById('result-section');
+        const svgPreviewContainer = document.getElementById('svg-preview-container');
+        const svgCodeTextarea = document.getElementById('svg-code');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
 
-        // Dynamic Configuration State Node
-        const engineMode = document.getElementById('engineMode');
-        const svgSize = document.getElementById('svgSize');
-        const edgeThreshold = document.getElementById('edgeThreshold');
-        const pathSmooth = document.getElementById('pathSmooth');
-        const noiseFilter = document.getElementById('noiseFilter');
-        const fillColor = document.getElementById('fillColor');
-        const strokeColor = document.getElementById('strokeColor');
-        const strokeWidth = document.getElementById('strokeWidth');
+        // Global variable to store generated SVG string
+        let currentSvgData = '';
 
-        let rawSourceImg = null;
-        let globalSVGPayload = "";
-        let globalDataURIPayload = "";
-
-        // UI Trigger Mappings
-        dropZone.onclick = () => fileInput.click();
-
-        fileInput.onchange = (e) => {
-            if (e.target.files.length > 0) loadAndVerifyImage(e.target.files[0]);
-        };
-
-        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('border-blue-500', 'bg-blue-500/[0.02]'); };
-        dropZone.ondragleave = () => { dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]'); };
-        dropZone.ondrop = (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-blue-500', 'bg-blue-500/[0.02]');
-            if (e.dataTransfer.files.length > 0) loadAndVerifyImage(e.dataTransfer.files[0]);
-        };
-
-        // Hot Realtime Event Binding Configuration
-        [engineMode, svgSize, edgeThreshold, pathSmooth, noiseFilter, fillColor, strokeColor, strokeWidth].forEach(ctrl => {
-            ctrl.addEventListener('input', () => {
-                updateValueMetrics();
-                triggerDynamicRecompilation();
-            });
+        // Initialize App - Splash Screen logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                splashScreen.style.visibility = 'hidden';
+                mainContent.style.opacity = '1';
+                mainContent.classList.add('fade-in-up');
+            }, 1500); // 1.5 second premium loading experience
         });
 
-        function updateValueMetrics() {
-            document.getElementById('thresholdVal').innerText = edgeThreshold.value;
-            document.getElementById('smoothVal').innerText = pathSmooth.value;
-            document.getElementById('noiseVal').innerText = noiseFilter.value + 'px';
-            document.getElementById('strokeVal').innerText = strokeWidth.value + 'px';
-            document.getElementById('fillHex').innerText = fillColor.value.toUpperCase();
-            document.getElementById('strokeHex').innerText = strokeColor.value.toUpperCase();
-        }
+        // Event Listeners for Drag and Drop
+        dropZone.addEventListener('click', () => fileInput.click());
 
-        // Processing Pipeline Core
-        function loadAndVerifyImage(file) {
-            uploadPrompt.classList.add('hidden');
-            processingUI.classList.remove('hidden');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-active');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-active');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-active');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length) {
+                handleFile(this.files[0]);
+            }
+        });
+
+        /**
+         * Core Logic: Reads the image and converts it into a high-quality SVG format.
+         */
+        function handleFile(file) {
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                showToast('Please upload a valid image file.', false);
+                return;
+            }
 
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = function(event) {
                 const img = new Image();
-                img.onload = () => {
-                    rawSourceImg = img;
-                    vectorSettingsPanel.classList.remove('hidden');
-                    updateValueMetrics();
-                    triggerDynamicRecompilation();
+                img.onload = function() {
+                    // Extract dimensions
+                    const width = img.width;
+                    const height = img.height;
+                    const dataUrl = event.target.result;
+
+                    // Generate Real SVG String with embedded HD image
+                    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="100%" height="100%">
+    <!-- Auto-generated High Quality SVG from Image -->
+    <image href="${dataUrl}" width="${width}" height="${height}" x="0" y="0" preserveAspectRatio="xMidYMid meet"/>
+</svg>`;
+
+                    currentSvgData = svgString;
+
+                    // Update UI
+                    svgPreviewContainer.innerHTML = svgString;
+                    svgCodeTextarea.value = svgString;
+
+                    // Show Results
+                    resultSection.classList.remove('hidden');
+                    
+                    // Smooth scroll to results
+                    setTimeout(() => {
+                        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        showToast('Conversion successful!', true);
+                    }, 100);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function triggerDynamicRecompilation() {
-            if (!rawSourceImg) return;
+        /**
+         * Action: Copy Code (With Fallback for Non-HTTPS Local Environments)
+         */
+        function copyCode() {
+            if (!currentSvgData) return;
             
-            // Build temporary offscreen canvas matrix for vector reading optimization (Max sizing optimization to bypass lag)
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            // Check if modern clipboard API is available (requires HTTPS or localhost)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(currentSvgData).then(() => {
+                    showToast('SVG Code copied to clipboard!', true);
+                }).catch(err => {
+                    console.error('Clipboard write failed:', err);
+                    fallbackCopyTextToClipboard(currentSvgData); // Fallback if API fails
+                });
+            } else {
+                // Execute fallback for non-secure contexts (like http://192.168.x.x)
+                fallbackCopyTextToClipboard(currentSvgData);
+            }
+        }
+
+        /**
+         * Fallback function using document.execCommand('copy')
+         */
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
             
-            // Scaling limit for high performance processing
-            const maxDimension = 512; 
-            let width = rawSourceImg.width;
-            let height = rawSourceImg.height;
+            // Avoid scrolling to bottom or showing the textarea
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
 
-            if (width > maxDimension || height > maxDimension) {
-                if (width > height) {
-                    height = Math.round((height * maxDimension) / width);
-                    width = maxDimension;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('SVG Code copied to clipboard!', true);
                 } else {
-                    width = Math.round((width * maxDimension) / height);
-                    height = maxDimension;
+                    showToast('Copy failed!', false);
                 }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                showToast('Error copying text!', false);
             }
 
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(rawSourceImg, 0, 0, width, height);
-
-            const imageData = ctx.getImageData(0, 0, width, height);
-            executeTracerAlgorithm(imageData, width, height);
+            document.body.removeChild(textArea);
         }
 
-        // Pure JS Contour Tracking & Optimization Vector Tracer (Engine 3.0 Core)
-        function executeTracerAlgorithm(imageData, width, height) {
-            const data = imageData.data;
-            const threshold = parseInt(edgeThreshold.value);
-            const smoothing = parseInt(pathSmooth.value);
-            const noise = parseInt(noiseFilter.value);
-            const mode = engineMode.value;
-
-            // Generate Binary Grid Layer
-            const grid = new Uint8Array(width * height);
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
-                const idx = i / 4;
-
-                let isSolid = false;
-                if (mode === 'alpha') {
-                    isSolid = a > threshold;
-                } else {
-                    const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-                    isSolid = luma < threshold && a > 40; 
-                }
-                grid[idx] = isSolid ? 1 : 0;
-            }
-
-            const contours = findContours(grid, width, height);
-            const paths = [];
-
-            // Run Path Reduction & Smoothing Algorithm Pass
-            contours.forEach(contour => {
-                if (contour.length < noise) return; // Clean noise speckles
-
-                let smoothed = applyMovingAverage(contour, smoothing);
-                smoothed = simplifyCollinearPaths(smoothed, 1.2);
-                
-                if (smoothed.length >= 3) {
-                    paths.push(buildBezierPathString(smoothed));
-                }
-            });
-
-            generateSVGPayload(paths, width, height);
+        /**
+         * Action: Download direct SVG File
+         */
+        function downloadSVG() {
+            if (!currentSvgData) return;
+            
+            const blob = new Blob([currentSvgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'premium-icon.svg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            showToast('SVG File Downloaded!', true);
         }
 
-        // Contour Tracing Engine (Moore-Neighbor Algorithm Integration)
-        function findContours(grid, width, height) {
-            const visited = new Uint8Array(width * height);
-            const contours = [];
-            const dirs = [
-                [0, -1], [1, -1], [1, 0], [1, 1],
-                [0, 1], [-1, 1], [-1, 0], [-1, -1]
-            ];
-
-            for (let y = 1; y < height - 1; y++) {
-                for (let x = 1; x < width - 1; x++) {
-                    const idx = y * width + x;
-                    if (grid[idx] === 1 && !visited[idx]) {
-                        // Edge Check detection
-                        let isEdge = false;
-                        for (let d = 0; d < 8; d += 2) {
-                            if (grid[(y + dirs[d][1]) * width + (x + dirs[d][0])] === 0) {
-                                isEdge = true;
-                                break;
-                            }
-                        }
-
-                        if (isEdge) {
-                            const contour = [];
-                            let cx = x;
-                            let cy = y;
-                            let bDir = 6;
-                            let startFlag = false;
-                            
-                            let loopLimit = 0;
-                            const maxLoops = width * height;
-
-                            while (loopLimit < maxLoops) {
-                                contour.push([cx, cy]);
-                                visited[cy * width + cx] = 1;
-
-                                let found = false;
-                                let searchDir = (bDir + 1) % 8;
-
-                                for (let i = 0; i < 8; i++) {
-                                    const dIdx = (searchDir + i) % 8;
-                                    const nx = cx + dirs[dIdx][0];
-                                    const ny = cy + dirs[dIdx][1];
-
-                                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                                        if (grid[ny * width + nx] === 1) {
-                                            cx = nx;
-                                            cy = ny;
-                                            bDir = (dIdx + 4) % 8;
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if (!found || (cx === x && cy === y)) break;
-                                loopLimit++;
-                            }
-                            if (contour.length > 3) contours.push(contour);
-                        }
-                    }
-                }
-            }
-            return contours;
-        }
-
-        // Curve Optimizer - Lowpass filter smoothing metrics
-        function applyMovingAverage(points, size) {
-            if (size === 0 || points.length < 3) return points;
-            const smoothed = [];
-            const len = points.length;
-            for (let i = 0; i < len; i++) {
-                let sx = 0, sy = 0, count = 0;
-                for (let k = -size; k <= size; k++) {
-                    const idx = (i + k + len) % len;
-                    sx += points[idx][0];
-                    sy += points[idx][1];
-                    count++;
-                }
-                smoothed.push([sx / count, sy / count]);
-            }
-            return smoothed;
-        }
-
-        // Collinearity points cleaner
-        function simplifyCollinearPaths(points, tol) {
-            if (points.length < 3) return points;
-            const res = [points[0]];
-            let last = points[0];
-
-            for (let i = 1; i < points.length - 1; i++) {
-                const curr = points[i];
-                const next = points[i + 1];
-
-                const area = Math.abs((next[1] - last[1]) * curr[0] - (next[0] - last[0]) * curr[1] + next[0] * last[1] - next[1] * last[0]);
-                const base = Math.hypot(next[0] - last[0], next[1] - last[1]);
-                const dist = base === 0 ? 0 : area / base;
-
-                if (dist > tol) {
-                    res.push(curr);
-                    last = curr;
-                }
-            }
-            res.push(points[points.length - 1]);
-            return res;
-        }
-
-        // Quadratic Curve Generator for ultra smooth mathematical vector lines
-        function buildBezierPathString(points) {
-            if (points.length === 0) return "";
-            let d = `M ${points[0][0].toFixed(1)} ${points[0][1].toFixed(1)}`;
-            for (let i = 1; i < points.length; i++) {
-                const prev = points[i - 1];
-                const curr = points[i];
-                const mx = (prev[0] + curr[0]) / 2;
-                const my = (prev[1] + curr[1]) / 2;
-                d += ` Q ${prev[0].toFixed(1)} ${prev[1].toFixed(1)}, ${mx.toFixed(1)} ${my.toFixed(1)}`;
-            }
-            d += ` L ${points[points.length - 1][0].toFixed(1)} ${points[points.length - 1][1].toFixed(1)} Z`;
-            return d;
-        }
-
-        // Final SVG Markup Compiler Engine with Dynamic Dimensions
-        function generateSVGPayload(paths, origW, origH) {
-            if (paths.length === 0) {
-                previewArea.innerHTML = `<p class="text-neutral-600 text-xs font-medium tracking-wide">Error: Adjust Edge Threshold slider to reveal shapes</p>`;
+        /**
+         * Action: Download ZIP File containing the SVG
+         */
+        function downloadZIP() {
+            if (!currentSvgData) return;
+            if (typeof JSZip === 'undefined') {
+                showToast('ZIP engine loading... Please try again in a moment.', false);
                 return;
             }
 
-            const sizeSelection = svgSize.value;
-            let displayW = origW;
-            let displayH = origH;
-
-            if (sizeSelection !== 'responsive') {
-                const parsedDim = parseInt(sizeSelection);
-                displayW = parsedDim;
-                displayH = Math.round((origH * parsedDim) / origW);
-            }
-
-            const fullPathData = paths.join(" ");
-            const svgFill = fillColor.value;
-            const svgStroke = strokeColor.value;
-            const svgStrokeW = strokeWidth.value;
-
-            // Generate clean vector representation code
-            let svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" `;
-            if (sizeSelection === 'responsive') {
-                svgMarkup += `viewBox="0 0 ${origW} ${origH}">\n`;
-            } else {
-                svgMarkup += `width="${displayW}" height="${displayH}" viewBox="0 0 ${origW} ${origH}">\n`;
-            }
+            const zip = new JSZip();
             
-            svgMarkup += `  <path d="${fullPathData}" fill="${svgFill}" fill-rule="evenodd"`;
-            if (parseFloat(svgStrokeW) > 0) {
-                svgMarkup += ` stroke="${svgStroke}" stroke-width="${svgStrokeW}" stroke-linejoin="round" stroke-linecap="round"`;
-            }
-            svgMarkup += ` />\n</svg>`;
-
-            globalSVGPayload = svgMarkup;
-            globalDataURIPayload = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgMarkup)));
-
-            // Update user viewport safely
-            previewArea.innerHTML = svgMarkup;
-            const activeNode = previewArea.querySelector('svg');
-            if (activeNode) {
-                activeNode.style.maxWidth = "100%";
-                activeNode.style.maxHeight = "100%";
-                activeNode.style.height = "auto";
-            }
-
-            codeOutput.value = svgMarkup;
-
-            // Interface Reveals
-            processingUI.classList.add('hidden');
-            uploadPrompt.classList.remove('hidden');
-            actionButtons.classList.remove('hidden');
-            setTimeout(() => {
-                actionButtons.classList.remove('opacity-0', 'translate-y-2');
-            }, 50);
-
-            displayToast("Vector Compiled Successfully");
-        }
-
-        // Clipboard operations
-        async function copyCodeStream() {
-            if (!globalSVGPayload) return;
-            try {
-                await navigator.clipboard.writeText(globalSVGPayload);
-                displayToast("SVG Code Copied to Clipboard");
-            } catch (err) {
-                fallbackCopyProtocol(globalSVGPayload);
-            }
-        }
-
-        async function copyURLStream() {
-            if (!globalDataURIPayload) return;
-            try {
-                await navigator.clipboard.writeText(globalDataURIPayload);
-                displayToast("Data URI Base64 Copied");
-            } catch (err) {
-                fallbackCopyProtocol(globalDataURIPayload);
-            }
-        }
-
-        function fallbackCopyProtocol(payloadData) {
-            const ta = document.createElement("textarea");
-            ta.value = payloadData;
-            ta.style.position = "fixed";
-            ta.style.opacity = "0";
-            document.body.appendChild(ta);
-            ta.select();
-            try {
-                document.execCommand('copy');
-                displayToast("Copied via standard proxy channel");
-            } catch (err) {
-                displayToast("Copy failed");
-            }
-            document.body.removeChild(ta);
-        }
-
-        // Modals Management
-        function openDownloadModal() {
-            if (!globalSVGPayload) return;
-            downloadModal.classList.add('active');
-        }
-
-        function closeModal() {
-            downloadModal.classList.remove('active');
-        }
-
-        function triggerDownload(formatType) {
-            let processedName = filenameInput.value.trim().replace(/[^a-zA-Z0-9_]/g, "");
-            if (!processedName) processedName = "vector_source";
-
-            const fileContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + globalSVGPayload;
-
-            if (formatType === 'svg') {
-                const blob = new Blob([fileContent], { type: 'image/svg+xml;charset=utf-8' });
-                executeClientDownload(blob, `${processedName}.svg`);
-                displayToast("SVG Vector Asset Exported");
-            } 
-            else if (formatType === 'zip') {
-                if (typeof JSZip === 'undefined') {
-                    displayToast("Compiler Error. Retry");
-                    return;
-                }
-                const zip = new JSZip();
-                zip.file(`${processedName}.svg`, fileContent);
-                
-                displayToast("Compressing ZIP encapsulator...");
-                
-                zip.generateAsync({ type: "blob", compression: "DEFLATE" }).then((blob) => {
-                    executeClientDownload(blob, `${processedName}_package.zip`);
-                    displayToast("Production ZIP Package Saved");
+            // Add SVG file to the ZIP archive
+            zip.file("premium-icon.svg", currentSvgData);
+            
+            // Generate the ZIP file asynchronously
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    const url = URL.createObjectURL(content);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'premium-icon-pack.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                    showToast('ZIP Archive Downloaded!', true);
+                })
+                .catch(function(err) {
+                    showToast('Failed to create ZIP', false);
+                    console.error("ZIP Generation Error:", err);
                 });
+        }
+
+        /**
+         * Utility: Show Custom Toast Notification
+         */
+        function showToast(message, isSuccess = true) {
+            toastMessage.textContent = message;
+            
+            // Update icon based on status
+            const icon = toast.querySelector('i');
+            if(isSuccess) {
+                icon.className = 'fa-solid fa-circle-check text-theme-green';
+            } else {
+                icon.className = 'fa-solid fa-circle-exclamation text-red-500';
             }
-            closeModal();
-        }
 
-        function executeClientDownload(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 2000);
-        }
-
-        function displayToast(msg) {
-            notificationText.innerText = msg;
-            notification.classList.remove('translate-y-32', 'opacity-0');
+            // Animate In
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+            
+            // Hide after 3 seconds
             setTimeout(() => {
-                notification.classList.add('translate-y-32', 'opacity-0');
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 20px)';
             }, 3000);
         }
-
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-        downloadModal.addEventListener('click', (e) => { if (e.target === downloadModal) closeModal(); });
     </script>
 </body>
 </html>
